@@ -36,7 +36,19 @@ CLASS ztravel_fill_data_333 IMPLEMENTATION.
 
       APPEND ls_travel TO lt_travel.
 
+
     ENDLOOP.
+    DATA(ls_travel2) = VALUE ztravel_333(
+        travel_id     = '33333333'
+        total_price   = 1000
+        currency_code = <ls_dmo>-currency_code
+        description   = <ls_dmo>-description
+        travel_type   = COND #( WHEN <ls_dmo>-total_price > 4500 THEN 'Business'
+                            WHEN <ls_dmo>-total_price > 3000 THEN 'Premium Economy'
+                            ELSE 'Economy' )
+      ).
+
+      APPEND ls_travel2 TO lt_travel.
 
     INSERT ztravel_333 FROM TABLE @lt_travel.
   ENDMETHOD.

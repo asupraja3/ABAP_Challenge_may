@@ -60,11 +60,13 @@ CLASS ltc_zitravel_333 IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD test_total_price_gt_1000.
+    DATA: lv_total_price TYPE zitravel_333-TotalPrice,
+          lv_disc_price  TYPE zitravel_333-DiscPrice.
     SELECT SINGLE totalprice, DiscPrice
      FROM zitravel_333
      WHERE totalprice > 1000
-     AND DiscPrice is NOT initial
-     INTO (@DATA(lv_total_price), @DATA(lv_disc_price)).
+     AND DiscPrice IS NOT INITIAL
+     INTO ( @lv_total_price, @lv_disc_price ).
 
     "WRITE: / 'Total:', lv_total_price, ' Discounted:', lv_disc_price.
 
@@ -91,13 +93,18 @@ CLASS ltc_zitravel_333 IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD test_total_price_eq_1000.
-    SELECT SINGLE DiscPrice FROM zitravel_333
-      WHERE totalprice = 1000
-      INTO @DATA(lv_disc_price).
+    DATA: lv_total_price TYPE zitravel_333-TotalPrice,
+          lv_disc_price  TYPE zitravel_333-DiscPrice.
+    SELECT SINGLE totalprice, DiscPrice
+     FROM zitravel_333
+     WHERE totalprice = '1000.00'
 
-    cl_abap_unit_assert=>assert_equals(
+     INTO ( @lv_total_price, @lv_disc_price ).
+
+    DATA(lv_expected) = lv_total_price * '0.9'.
+    cl_abap_unit_assert=>assert_differs(
       act = lv_disc_price
-      exp = 1000
+      exp = lv_expected
       msg = 'No discount expected when total_price = 1000'
     ).
   ENDMETHOD.
